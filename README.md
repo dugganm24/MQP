@@ -6,7 +6,7 @@ __Project Objectives__
  - Generate high-quality 2D facial images using StyleGAN3.  
  - Map these generated images onto a 3D spherical surface that mimics the shape of a human head using PyTorch3D.  
  - Evaluate the realism of both 2D and 3D representations using FID.  
- - Display the final 3D face on a flexible LCD screen, focusing on realism and adaptability to 3D surfaces.  
+ - Display the final 3D face on a flexible LCD screen, focusing on realism and adaptability to 3D surfaces.
 __Technologies Used__  
  - StyleGAN3: For generating high-resolution, realistic 2D facial images.  
  - FID: To measure the quality and realism of the generated images.  
