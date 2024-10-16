@@ -1,8 +1,8 @@
 # MQP: AI-Powered 3D Facial Generation for Robotic Interfaces
-Project Overview  
+__Project Overview__  
 This project explores the generation of realistic 2D human facial images using StyleGAN3 and maps these images onto a 3D surface using PyTorch3D. The primary goal is to assess and enhance the realism of the generated images when displayed on a flexible LCD screen wrapped around a sphere shaped like a human head. Fréchet Inception Distance (FID) will be used to evaluate the realism of the images throughout the process.
 
-Project Objectives  
+__Project Objectives__    
 Generate high-quality 2D facial images using StyleGAN3.
 Map these generated images onto a 3D spherical surface that mimics the shape of a human head using PyTorch3D.
 Evaluate the realism of both 2D and 3D representations using FID.
