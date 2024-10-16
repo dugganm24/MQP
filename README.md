@@ -12,5 +12,6 @@ __Technologies Used__
  - StyleGAN3: For generating high-resolution, realistic 2D facial images.  
  - FID: To measure the quality and realism of the generated images.  
  - PyTorch3D: For mapping 2D images onto a 3D surface and rendering the final display.  
- - Flexible LCD screen: To display the generated 3D face in real-world applications.  
+ - Flexible LCD screen: To display the generated 3D face on robotic head.
+ - NVIDIA RTX A5000: NVIDIA GPU to improve processing speeds 
 
