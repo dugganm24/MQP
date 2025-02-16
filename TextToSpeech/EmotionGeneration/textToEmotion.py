@@ -15,34 +15,29 @@ emotion_mapping = {
     "anticipation": "outofbreath",
 }
 
-def textToEmotion(text):
-    emotion_model = pipeline('text-classification', model='j-hartmann/emotion-english-distilroberta-base')
+classifier = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", return_all_scores=True)
 
-    result = emotion_model(text)
-    emotion = result[0]['label'].lower()
-    score = result[0]['score']
+def textToEmotion(text): 
 
-    return emotion, score
-
-def generateEmotionWeights(emotion):
-    emotion_weights = {
-        "amazement": 0.0,
-        "anger": 0.0,
-        "cheekiness": 0.0,
-        "disgust": 0.0,
-        "fear": 0.0,
-        "grief": 0.0,
-        "joy": 0.0,
-        "outofbreath": 0.0,
-        "pain": 0.0,
-        "sadness": 0.0
-    }
-
-    if emotion in emotion_mapping:
-        audio2face_emotion = emotion_mapping[emotion]
-        emotion_weights[audio2face_emotion] = 1.0 # initially set emotion to 1, can further customize this weight 
+    result = classifier(text)[0] 
+    emotion_weights = {entry['label']: entry['score'] for entry in result}  
     
-    return emotion_weights
+    mapped_emotions = {emotion_mapping.get(label, label): score for label, score in emotion_weights.items()}
+    
+    audio2face_emotions = {
+        "amazement": mapped_emotions.get("amazement", 0),
+        "anger": mapped_emotions.get("anger", 0),
+        "cheekiness": mapped_emotions.get("cheekiness", 0),
+        "disgust": mapped_emotions.get("disgust", 0),
+        "fear": mapped_emotions.get("fear", 0),
+        "grief": mapped_emotions.get("grief", 0),
+        "joy": mapped_emotions.get("joy", 0),
+        "outofbreath": mapped_emotions.get("outofbreath", 0),
+        "pain": mapped_emotions.get("pain", 0),
+        "sadness": mapped_emotions.get("sadness", 0)
+    }
+    
+    return audio2face_emotions
 
 def sendToAudio2Face(emotion_weights):
     url = 'http://localhost:8011/A2F/A2E/SetEmotionByName' 
@@ -65,14 +60,10 @@ def sendToAudio2Face(emotion_weights):
         print(f"Error sending audio to Audio2Face: {response.status_code}, {response.text}")
 
 def main():
-    text = "Testing sadness, I am so sad"
+    text = "That is amazing!"
 
-    emotion, score = textToEmotion(text)
-    print(f"Emotion: {emotion}, Score: {score}")
-
-    emotion_weights = generateEmotionWeights(emotion)
+    emotion_weights = textToEmotion(text)
     print(f"Emotion Weights: {emotion_weights}")
-
     sendToAudio2Face(emotion_weights)
 
 if __name__ == "__main__":
