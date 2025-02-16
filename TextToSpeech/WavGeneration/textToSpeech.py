@@ -17,7 +17,7 @@ def textToSpeech(text):
     file_path_wav = os.path.normpath(file_path_wav)
 
     ffmpeg_path = "C:/Users/mpduggan/MQP/TextToSpeech/WavGeneration/ffmpeg-master-latest-win64-gpl-shared/ffmpeg-master-latest-win64-gpl-shared/bin/ffmpeg.exe"
-    subprocess.run([ffmpeg_path, "-i", file_path_mp3, file_path_wav])
+    subprocess.run([ffmpeg_path, "-y", "-i", file_path_mp3, file_path_wav])
 
     return file_path_wav
 
@@ -44,7 +44,7 @@ def sendToAudio2Face(audioPath):
         print(f"Error sending audio to Audio2Face: {response.status_code}, {response.text}")
 
 def main():
-    text = "Initial testing"
+    text = "Testing auto overwriting of audio files"
 
     audioPath = textToSpeech(text)
     sendToAudio2Face(audioPath)
