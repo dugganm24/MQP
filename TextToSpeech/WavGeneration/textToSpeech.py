@@ -31,11 +31,10 @@ def sendToAudio2Face(audioPath):
 
     data = {
         "a2f_player": "/World/audio2face/Player",
-        "file_name": audioPath,  # Directly use the file path here
+        "file_name": audioPath, 
         "time_range": [0, -1]
     }
 
-    # Send the request as JSON
     response = requests.post(url, headers=headers, data=json.dumps(data))
 
     if response.status_code == 200:
