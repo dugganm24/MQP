@@ -42,11 +42,32 @@ def sendToAudio2Face(audioPath):
     else:
         print(f"Error sending audio to Audio2Face: {response.status_code}, {response.text}")
 
+def generateEmotionKeys():
+    url = 'http://localhost:8011/A2F/A2E/GenerateKeys'
+
+    headers = {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+    }
+
+    data = {
+        "a2f_instance": "/World/audio2face/CoreFullface",
+    }
+
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+
+    if response.status_code == 200:
+        print("Emotion sent to Audio2Face")
+    else:
+        print(f"Error sending emotion to Audio2Face: {response.status_code}, {response.text}")
+
+
 def main():
-    text = "Testing auto overwriting of audio files"
+    text = "I really hope generating emotion keys works!"
 
     audioPath = textToSpeech(text)
     sendToAudio2Face(audioPath)
+    generateEmotionKeys()
 
 if __name__ == "__main__":
     main()

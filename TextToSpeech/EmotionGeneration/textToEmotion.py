@@ -55,12 +55,12 @@ def sendToAudio2Face(emotion_weights):
     response = requests.post(url, headers=headers, data=json.dumps(data))
 
     if response.status_code == 200:
-        print("Emotions sent to Audio2Face")
+        print("Emotion weights sent to Audio2Face")
     else:
-        print(f"Error sending audio to Audio2Face: {response.status_code}, {response.text}")
+        print(f"Error sending emotion weights to Audio2Face: {response.status_code}, {response.text}")
 
 def main():
-    text = "That is amazing!"
+    text = "I am so sad right now!"
 
     emotion_weights = textToEmotion(text)
     print(f"Emotion Weights: {emotion_weights}")
