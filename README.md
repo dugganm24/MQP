@@ -1,6 +1,6 @@
 # MQP: AI-Powered 3D Facial Generation for Robotic Interfaces
 __Project Overview__  
-This project explores the generation of realistic human facial video using 3D Morphable Models (3DMM) and First Order Motion Model (FOMM) and maps these faces onto a 3D surface using Blender. The mapped faces will express emotion and be lip-synced to a speech output using Audio2Face. The primary goal is to assess and enhance the realism of the generated faces when displayed on a flexible LCD screen wrapped around a sphere shaped like a human head. Fréchet Video Distance (FID), CLIP, and SyncNet will be used as metrics in the Stable-Baselines3 reinforcement learning framework to evaluate the realism of the faces throughout the process.
+This project focuses on generating realistic human facial video and mapping it onto a 3D surface to create expressive, lip-synced animations. Using Audio2Face, the system synchronizes facial movements with speech while incorporating emotion-based animations for enhanced realism. The final output is displayed on a flexible LCD screen wrapped around a sphere, mimicking a human head. By leveraging real-time processing and AI-driven facial animation, this project aims to achieve natural-looking expressions and speech synchronization, enabling more lifelike and interactive robotic displays.
 
 __Project Objectives__    
  - Generate high-quality human facial videos using Audio2Face.  
