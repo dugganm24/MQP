@@ -4,18 +4,15 @@ This project explores the generation of realistic human facial video using 3D Mo
 
 __Project Objectives__    
  - Generate high-quality human facial videos using Audio2Face.  
- - Map these generated faces onto a 3D spherical surface that mimics the shape of a human head using Blender.  
- - Evaluate the realism of the 3D representation using FVD, CLIP, and SyncNet in Stable-Baselines3.  
+ - Map these generated faces onto a 3D spherical surface that mimics the shape of a human head using Unreal Engine.  
  - Display the final 3D face on a flexible LCD screen, focusing on realism and adaptability to 3D surfaces.
 
 __Technologies Used__    
  - **Audio2Face**: For generating realistic human faces and syncing facial expressions and lip movements with input audio file.
- - **Blender**: For mapping faces onto a 3D surface and rendering the final display. 
- - **FVD**: To measure the similarity between generated and real videos.
- - **CLIP**: To measure how well generated faces match expressions based on textual input.
- - **SyncNet**: To measure synchronization of lip movements with speech output.
- - **Stable-Baselines3**: Provides RL framework to optimize model based on chosen metrics.
- - **Flexible LCD screen**: To display the generated 3D face on robotic head.
- - **Ainker PowerConf C200 Webcam**: Used to gather image input for RL feedback loop.
+ - **Google Text-To-Speech**: For converting text into mp3 audio file.
+ - **ffmpeg**: For converting gTTS generated mp3 file into wav format for Audio2Face compatibility.
+ - **Emotion English DistilRoBERTa-base**: For generating emotion weights based on textual input.
+ - **Audio2Face Headless API**: For automatically sending generated audio output and emotion weights to Audio2Face for minimal latency in real time interactions.
+ - **Unreal Engine**: For rendering generated emotions and lip-syncing to a MetaHuman for display on LCD. 
  - **NVIDIA GeForce RTX 4090**: NVIDIA GPU to improve processing speeds.
 
