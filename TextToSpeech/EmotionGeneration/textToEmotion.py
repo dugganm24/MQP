@@ -60,7 +60,7 @@ def sendToAudio2Face(emotion_weights):
         print(f"Error sending emotion weights to Audio2Face: {response.status_code}, {response.text}")
 
 def main():
-    text = "Testing live link streaming"
+    text = "Testing live gitignore"
 
     emotion_weights = textToEmotion(text)
     print(f"Emotion Weights: {emotion_weights}")

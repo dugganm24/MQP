@@ -43,7 +43,7 @@ def sendToAudio2Face(audioPath):
         print(f"Error sending audio to Audio2Face: {response.status_code}, {response.text}")
 
 def main():
-    text = "Testing live link streaming"
+    text = "Testing live gitignore"
 
     audioPath = textToSpeech(text)
     sendToAudio2Face(audioPath)
