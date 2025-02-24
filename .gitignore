@@ -1,0 +1,5 @@
+# speech output files
+/TextToSpeech/WavGeneration/Output/*
+
+# usd files
+/Audio2Face/*
