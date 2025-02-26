@@ -1,5 +1,8 @@
 # usd files
-/Audio2Face/USD_Files/*
+Audio2Face/USD_Files/*
 
 # speech output
 Audio2Face/SpeechGeneration/Output
+
+# ffmpeg library
+Audio2Face/SpeechGeneration/ffmpeg-master-latest-win64-gpl-shared
