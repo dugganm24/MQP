@@ -17,7 +17,7 @@ emotion_mapping = {
 
 classifier = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", return_all_scores=True)
 
-def textToEmotion(text): 
+def emotionGeneration(text): 
 
     result = classifier(text)[0] 
     emotion_weights = {entry['label']: entry['score'] for entry in result}  
@@ -39,7 +39,7 @@ def textToEmotion(text):
     
     return audio2face_emotions
 
-def sendToAudio2Face(emotion_weights):
+def sendEmotionToAudio2Face(emotion_weights):
     url = 'http://localhost:8011/A2F/A2E/SetEmotionByName' 
 
     headers = {

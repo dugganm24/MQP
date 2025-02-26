@@ -4,8 +4,8 @@ import os
 import subprocess
 import json
 
-def textToSpeech(text):
-    output_folder = "C:/Users/mpduggan/MQP/TextToSpeech/WavGeneration/Output"
+def speechGeneration(text):
+    output_folder = "C:/Users/mpduggan/MQP/Audio2Face/SpeechGeneration/Output"
 
     file_path_mp3 = os.path.join(output_folder, "speechOutput.mp3")
     file_path_mp3 = os.path.normpath(file_path_mp3)
@@ -16,12 +16,12 @@ def textToSpeech(text):
     file_path_wav = os.path.join(output_folder, "speechOutput.wav")
     file_path_wav = os.path.normpath(file_path_wav)
 
-    ffmpeg_path = "C:/Users/mpduggan/MQP/TextToSpeech/WavGeneration/ffmpeg-master-latest-win64-gpl-shared/ffmpeg-master-latest-win64-gpl-shared/bin/ffmpeg.exe"
+    ffmpeg_path = "C:/Users/mpduggan/MQP/Audio2face/SpeechGeneration/ffmpeg-master-latest-win64-gpl-shared/ffmpeg-master-latest-win64-gpl-shared/bin/ffmpeg.exe"
     subprocess.run([ffmpeg_path, "-y", "-i", file_path_mp3, file_path_wav])
 
     return file_path_wav
 
-def sendToAudio2Face(audioPath):
+def sendSpeechToAudio2Face(audioPath):
     url = 'http://localhost:8011/A2F/Player/SetTrack'
 
     headers = {
@@ -37,6 +37,7 @@ def sendToAudio2Face(audioPath):
 
     response = requests.post(url, headers=headers, data=json.dumps(data))
 
+    print(audioPath)
     if response.status_code == 200:
         print("Audio sent to Audio2Face")
     else:

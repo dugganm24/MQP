@@ -2,5 +2,5 @@
 /Audio2Face/USD_Files/*
 
 # speech output
-TextToSpeech/WavGeneration/Output/speechOutput.mp3
-TextToSpeech/WavGeneration/Output/speechOutput.wav
+Audio2Face/SpeechGeneration/Output/speechOutput.wav
+Audio2Face/SpeechGeneration/Output/speechOutput.mp3
