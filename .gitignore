@@ -1,5 +1,5 @@
 # usd files
-/Audio2Face/*
+/Audio2Face/USD_Files/*
 
 # speech output
 TextToSpeech/WavGeneration/Output/speechOutput.mp3

@@ -1,0 +1,2 @@
+from textToEmotion import textToEmotion, sendToAudio2Face as sendEmotionToAudio2Face
+from textToSpeech import textToSpeech, sendToAudio2Face as sendAudioToAudio2Face, playTrack
