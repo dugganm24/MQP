@@ -3,8 +3,10 @@ import requests
 import os
 import subprocess
 import json
+import aiohttp
+import asyncio
 
-def speechGeneration(text):
+async def speechGeneration(text):
     output_folder = "C:/Users/mpduggan/MQP/Audio2Face/SpeechGeneration/Output"
 
     file_path_mp3 = os.path.join(output_folder, "speechOutput.mp3")
@@ -21,7 +23,7 @@ def speechGeneration(text):
 
     return file_path_wav
 
-def sendSpeechToAudio2Face(audioPath):
+async def sendSpeechToAudio2Face(audioPath):
     url = 'http://localhost:8011/A2F/Player/SetTrack'
 
     headers = {
@@ -35,15 +37,14 @@ def sendSpeechToAudio2Face(audioPath):
         "time_range": [0, -1]
     }
 
-    response = requests.post(url, headers=headers, data=json.dumps(data))
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, headers=headers, data=json.dumps(data)) as response:
+            if response.status == 200:
+                print("Audio sent to Audio2Face")
+            else:
+                print(f"Error sending audio to Audio2Face: {response.status}, {await response.text()}")
 
-    print(audioPath)
-    if response.status_code == 200:
-        print("Audio sent to Audio2Face")
-    else:
-        print(f"Error sending audio to Audio2Face: {response.status_code}, {response.text}")
-
-def playTrack():
+async def playTrack():
     url = 'http://localhost:8011/A2F/Player/Play'
 
     headers = {
@@ -55,9 +56,9 @@ def playTrack():
         "a2f_player": "/World/audio2face/Player",
     }
 
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-
-    if response.status_code == 200:
-        print("Audio played in Audio2Face")
-    else:
-        print(f"Error playing audio in Audio2Face: {response.status_code}, {response.text}")
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, headers=headers, data=json.dumps(data)) as response:
+            if response.status == 200:
+                print("Audio played in Audio2Face")
+            else:
+                print(f"Error playing audio in Audio2Face: {response.status}, {await response.text()}")

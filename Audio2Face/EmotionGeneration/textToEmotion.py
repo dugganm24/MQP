@@ -3,6 +3,10 @@ import torch
 from transformers import pipeline
 import json
 import numpy as np
+import aiohttp
+import asyncio
+
+device = 0 if torch.cuda.is_available() else -1
 
 emotion_mapping = {
     "joy": "joy",
@@ -15,9 +19,12 @@ emotion_mapping = {
     "anticipation": "outofbreath",
 }
 
-classifier = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", return_all_scores=True)
+classifier = pipeline("text-classification", 
+                      model="j-hartmann/emotion-english-distilroberta-base", 
+                      return_all_scores=True,
+                      device=0)
 
-def emotionGeneration(text): 
+async def emotionGeneration(text): 
 
     result = classifier(text)[0] 
     emotion_weights = {entry['label']: entry['score'] for entry in result}  
@@ -39,23 +46,22 @@ def emotionGeneration(text):
     
     return audio2face_emotions
 
-def sendEmotionToAudio2Face(emotion_weights):
+async def sendEmotionToAudio2Face(emotion_weights):
     url = 'http://localhost:8011/A2F/A2E/SetEmotionByName' 
 
     headers = {
         'accept': 'application/json',
         'Content-Type': 'application/json',
     }
-    
 
     data = {
         "a2f_instance": "/World/audio2face/CoreFullface",
         "emotions": emotion_weights
     }
 
-    response = requests.post(url, headers=headers, data=json.dumps(data))
-
-    if response.status_code == 200:
-        print("Emotion weights sent to Audio2Face")
-    else:
-        print(f"Error sending emotion weights to Audio2Face: {response.status_code}, {response.text}")
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, headers=headers, data=json.dumps(data)) as response:
+            if response.status == 200:
+                print("Emotion weights sent to Audio2Face")
+            else:
+                print(f"Error sending emotion weights to Audio2Face: {response.status}, {await response.text()}")
