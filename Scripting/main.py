@@ -10,9 +10,10 @@ from textToEmotion import emotionGeneration, sendEmotionToAudio2Face
 from textToSpeech import speechGeneration, sendSpeechToAudio2Face, playTrack
 
 async def main():
-    start_time = time.time()
 
-    text = "I am feeling down because I lost my job, and things seem uncertain in my life right now."
+    text = input("Enter text: ")
+
+    start_time = time.time()
 
     speech_start_time = time.time()
     audioPath = await speechGeneration(text)
