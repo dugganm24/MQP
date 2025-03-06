@@ -8,7 +8,7 @@ __Project Objectives__
  - Display the final 3D face on a flexible LCD screen, focusing on realism and adaptability to 3D surfaces.
 
 __Technologies Used__    
- - **NVIDIA udio2Face**: For generating realistic human faces and syncing facial expressions and lip movements with input audio file.
+ - **NVIDIA Audio2Face**: For generating realistic human faces and syncing facial expressions and lip movements with input audio file.
  - **Google Text-To-Speech**: For converting text into mp3 audio file.
  - **ffmpeg**: For converting gTTS generated mp3 file into wav format for Audio2Face compatibility.
  - **Emotion English DistilRoBERTa-base**: For generating emotion weights based on textual input.
