@@ -50,17 +50,8 @@ async def generate_text(input_text):
     except requests.exceptions.RequestException as e:
         return f"Request failed: {e}"
 
-    
-async def main():
 
-    ollama_process = start_ollama()
-    if ollama_process is None:
-        print("Failed to start Ollama.")
-        return
-
-    
-    input_text = input("Enter text: ")
-
+async def process_input(input_text):
     start_time = time.time()
 
     response_start_time = time.time() 
@@ -97,6 +88,22 @@ async def main():
 
     end_time = time.time()
     print(f"Total time: {end_time - start_time:.2f} seconds")
+
+async def main():
+
+    ollama_process = start_ollama()
+    if ollama_process is None:
+        print("Failed to start Ollama.")
+        return
+
+    while True:
+        input_text = input("Enter text: ")
+        if input_text.lower() == "exit":
+            break
+            
+        await process_input(input_text)
+
+    
 
 if __name__ == "__main__":
     asyncio.run(main())
