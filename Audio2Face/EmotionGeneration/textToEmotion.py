@@ -22,7 +22,7 @@ emotion_mapping = {
 classifier = pipeline("text-classification", 
                       model="j-hartmann/emotion-english-distilroberta-base", 
                       top_k=None,
-                      device=0)
+                      device = 0)
 
 async def emotionGeneration(text): 
 

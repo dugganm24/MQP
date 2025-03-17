@@ -5,6 +5,7 @@ import asyncio
 import subprocess 
 import requests
 import json
+import torch 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Audio2Face", "EmotionGeneration")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Audio2Face", "SpeechGeneration")))
@@ -15,10 +16,10 @@ from textToSpeech import speechGeneration, sendSpeechToAudio2Face, playTrack
 def start_ollama():
     ollama_path = r"C:\Users\mpduggan\AppData\Local\Programs\Ollama\ollama.exe"  
 
-
     try:
-        process = subprocess.Popen([ollama_path, "run", "gemma3:4b"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen([ollama_path, "run", "llama3.2"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print("Ollama started successfully.")
+
         return process
     
     except Exception as e:
@@ -29,16 +30,15 @@ async def generate_text(input_text):
     url = "http://localhost:11434/api/generate"  
     headers = {"Content-Type": "application/json"}  
 
+    system_prompt = "You are a language model designed to generate text that will be converted into speech for a humanoid robot. Your responses should be clear and designed to be spoken aloud. Focus on providing informative and natural-sounding responses. While keeping the speech clear, provide enough details to fully answer the users question but keep responses as short as possible to minimize latency. Do not include any visual elements, like emojis, in your responses"
+
     data = {
-        "model": "gemma3:4b",  
-        "prompt": input_text,  
+        "model": "llama3.2",  
+        "prompt": f"{system_prompt}\nUser input: {input_text}\nRobot speech:",
         "temperature": 0.1,
-        "stop": ["<end_of_turn>"],  # Stop token when the model should stop generating
+        "stop": ["<end_of_turn>"], 
         "stream": False
     }
-
-    print(f"Sending Request: {json.dumps(data, indent=2)}")  # Print the request body for debugging
-
 
     try:
         response = requests.post(url, headers=headers, json=data)
