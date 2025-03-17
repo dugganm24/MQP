@@ -29,7 +29,7 @@ async def generate_text(input_text):
     url = "http://localhost:11434/api/generate"  
     headers = {"Content-Type": "application/json"}  
 
-    system_prompt = "You are a language model designed to generate text that will be converted into speech that will be said by a humanoid robot. Your responses should be clear and designed to be spoken aloud. Focus on providing informative and natural-sounding responses. While keeping the speech clear, provide enough details to fully answer the users question but keep responses as short as possible to minimize latency. Do not include any visual elements, like emojis, in your responses"
+    system_prompt = "You are a language model designed to generate text that will be converted into speech that will be said by a humanoid robot. Your responses should be clear and designed to be spoken aloud. Focus on providing informative and natural-sounding responses. While keeping the speech clear, provide enough details to fully answer the users question but keep responses as short as possible to minimize latency. Do not include any visual elements, like emojis, in your responses. Feel free to generate responses based on realistic emotions that a human would likely feel when applicable. Default to happy responses unless the prompt or user input suggests otherwise."
 
     data = {
         "model": "llama3.2",  
@@ -49,7 +49,6 @@ async def generate_text(input_text):
             return f"Error: {response.status_code}, {response.text}"
     except requests.exceptions.RequestException as e:
         return f"Request failed: {e}"
-
 
 async def process_input(input_text):
     start_time = time.time()
