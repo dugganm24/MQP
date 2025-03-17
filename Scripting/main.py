@@ -2,6 +2,9 @@ import sys
 import os
 import time 
 import asyncio
+import subprocess 
+import requests
+import json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Audio2Face", "EmotionGeneration")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Audio2Face", "SpeechGeneration")))
@@ -9,19 +12,72 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "A
 from textToEmotion import emotionGeneration, sendEmotionToAudio2Face
 from textToSpeech import speechGeneration, sendSpeechToAudio2Face, playTrack
 
+def start_ollama():
+    ollama_path = r"C:\Users\mpduggan\AppData\Local\Programs\Ollama\ollama.exe"  
+
+
+    try:
+        process = subprocess.Popen([ollama_path, "run", "gemma3:4b"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print("Ollama started successfully.")
+        return process
+    
+    except Exception as e:
+        print(f"Error starting Ollama: {e}")
+        return None
+    
+async def generate_text(input_text):
+    url = "http://localhost:11434/api/generate"  
+    headers = {"Content-Type": "application/json"}  
+
+    data = {
+        "model": "gemma3:4b",  
+        "prompt": input_text,  
+        "temperature": 0.1,
+        "stop": ["<end_of_turn>"],  # Stop token when the model should stop generating
+        "stream": False
+    }
+
+    print(f"Sending Request: {json.dumps(data, indent=2)}")  # Print the request body for debugging
+
+
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        
+        if response.status_code == 200:
+            response_json = response.json()
+            return response_json.get("response", "No response key found.")
+        else:
+            return f"Error: {response.status_code}, {response.text}"
+    except requests.exceptions.RequestException as e:
+        return f"Request failed: {e}"
+
+    
 async def main():
 
-    text = input("Enter text: ")
+    ollama_process = start_ollama()
+    if ollama_process is None:
+        print("Failed to start Ollama.")
+        return
+
+    
+    input_text = input("Enter text: ")
 
     start_time = time.time()
 
+    response_start_time = time.time() 
+    response_text = await generate_text(input_text)
+    response_end_time = time.time()
+    print(f"Response: {response_text}")
+    print(f"Response generation time: {response_end_time - response_start_time:.2f} seconds")
+
+
     speech_start_time = time.time()
-    audioPath = await speechGeneration(text)
+    audioPath = await speechGeneration(response_text)
     speech_end_time = time.time()
     print(f"Speech generation time: {speech_end_time - speech_start_time:.2f} seconds")
 
     emotion_start_time = time.time()
-    emotion_weights = await emotionGeneration(text)
+    emotion_weights = await emotionGeneration(response_text)
     emotion_end_time = time.time()
     print(f"Emotion generation time: {emotion_end_time - emotion_start_time:.2f} seconds")
 
