@@ -3,3 +3,6 @@ Audio2Face/USD_Files/*
 
 # speech output
 Audio2Face/SpeechGeneration/Output/*
+
+# settings
+.vscode
