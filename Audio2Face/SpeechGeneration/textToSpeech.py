@@ -116,3 +116,22 @@ async def playTrack():
                 print(f"Error playing audio in Audio2Face: {response.status}, {await response.text()}")
 
 # Add API call to set idle emotion to looping 
+async def setLooping(loop_audio: bool = False):
+    url = 'http://localhost:8011/A2F/Player/SetLooping'
+
+    headers = {
+        'accept': 'application/json',
+        'Content-Type': 'application/json',
+    }
+
+    data = {
+        "a2f_player": "/World/audio2face/Player",
+        "loop_audio": loop_audio
+    }
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, headers=headers, data=json.dumps(data)) as response:
+            if response.status == 200:
+                print(f"Audio loop set to {loop_audio}")
+            else:
+                print(f"Error setting audio to loop in A2F: {response.status}, {await response.text()}")

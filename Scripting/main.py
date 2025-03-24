@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "A
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Audio2Face", "SpeechGeneration")))
 
 from textToEmotion import emotionGeneration, sendEmotionToAudio2Face, setIdleEmotion
-from textToSpeech import speechGeneration, sendSpeechToAudio2Face, playTrack, setIdleAudio, getResponseLength
+from textToSpeech import speechGeneration, sendSpeechToAudio2Face, playTrack, setIdleAudio, getResponseLength, setLooping
 
 def start_ollama():
     ollama_path = r"C:\Users\mpduggan\AppData\Local\Programs\Ollama\ollama.exe"  
@@ -49,8 +49,33 @@ async def generate_text(input_text):
             return f"Error: {response.status_code}, {response.text}"
     except requests.exceptions.RequestException as e:
         return f"Request failed: {e}"
+    
+# async def idle_loop():
+#     global idle_task
+#     await setLooping(True)
+#     print("Idle loop started.")
+#     asyncio.sleep(0.5)
+
+#     while True:
+#         await playTrack()
+#         await asyncio.sleep(0.5)
+
+# async def stop_idle_loop():
+#     global idle_task
+#     if idle_task and not idle_task.done():
+#         idle_task.cancel()
+#         try:
+#             await idle_task
+#         except asyncio.CancelledError:
+#             pass
+#         print("Idle loop stopped.")
+#     await setLooping(False)
+#     await asyncio.sleep(0.5)
+#     print("Looping disabled")
 
 async def process_input(input_text):
+    
+    # await stop_idle_loop()
 
     response_text = await generate_text(input_text)
     print(f"Response: {response_text}")
@@ -59,7 +84,6 @@ async def process_input(input_text):
     emotion_weights = await emotionGeneration(response_text)
     
     await sendEmotionToAudio2Face(emotion_weights)
-    print(f"Sending {audioPath} to Audio2Face for speech playback...")
     await sendSpeechToAudio2Face()
 
     await playTrack()
@@ -72,11 +96,8 @@ async def process_input(input_text):
 
     await setIdleAudio()
     await setIdleEmotion()
-
-async def idle_loop():
-    while True:
-        await playTrack()
-        await asyncio.sleep(0.1)
+    await setLooping(True)
+    await playTrack()
 
 async def main():
 
@@ -84,7 +105,7 @@ async def main():
     if ollama_process is None:
         print("Failed to start Ollama.")
         return
-        
+            
     while True:
         input_text = input("Enter text: ")
         if input_text.lower() == "exit":
