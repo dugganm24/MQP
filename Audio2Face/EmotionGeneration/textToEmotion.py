@@ -75,7 +75,4 @@ async def sendEmotionToAudio2Face(emotion_weights):
 
     async with aiohttp.ClientSession() as session:
         async with session.post(url, headers=headers, data=json.dumps(data)) as response:
-            if response.status == 200:
-                print("Emotion weights sent to Audio2Face")
-            else:
-                print(f"Error sending emotion weights to Audio2Face: {response.status}, {await response.text()}")
+            return response.status

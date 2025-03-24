@@ -24,7 +24,6 @@ async def speechGeneration(text):
     
     loop = asyncio.get_event_loop()
     await loop.run_in_executor(None, generate_speech)
-    print(f"Speech generated and saved to {file_path_wav}")
     return file_path_wav
 
 async def sendSpeechToAudio2Face():
@@ -45,11 +44,8 @@ async def sendSpeechToAudio2Face():
 
     async with aiohttp.ClientSession() as session:
         async with session.post(url, headers=headers, data=json.dumps(data)) as response:
-            if response.status == 200:
-                print(f"Set audio track in Audio2Face: {audioPath}")
-            else:
-                print(f"Error sending audio to Audio2Face: {response.status}, {await response.text()}")
-
+            return response.status
+        
 async def setIdleAudio():
 
     silentPath = "C:/Users/mpduggan/MQP/Audio2Face/SpeechGeneration/Output/silent.wav"
@@ -68,10 +64,7 @@ async def setIdleAudio():
 
     async with aiohttp.ClientSession() as session:
         async with session.post(url, headers=headers, data=json.dumps(data)) as response:
-            if response.status == 200:
-                print("Idle track set in Audio2Face")
-            else:
-                print(f"Error setting idle track in Audio2Face: {response.status}, {await response.text()}")
+           return response.status
 
 async def getResponseLength():
     url = 'http://localhost:8011/A2F/Player/GetRange'
@@ -89,10 +82,8 @@ async def getResponseLength():
         async with session.post(url, headers=headers, data=json.dumps(data)) as response:
             if response.status == 200:
                 response_json = await response.json()
-                print("Retrieved response length")
                 return response_json
             else:
-                print(f"Error getting response length from Audio2Face: {response.status}, {await response.text()}")
                 return None
 
 
@@ -110,12 +101,8 @@ async def playTrack():
 
     async with aiohttp.ClientSession() as session:
         async with session.post(url, headers=headers, data=json.dumps(data)) as response:
-            if response.status == 200:
-                print("Audio played in Audio2Face")
-            else:
-                print(f"Error playing audio in Audio2Face: {response.status}, {await response.text()}")
+           return response.status
 
-# Add API call to set idle emotion to looping 
 async def setLooping(loop_audio: bool = False):
     url = 'http://localhost:8011/A2F/Player/SetLooping'
 
@@ -131,7 +118,4 @@ async def setLooping(loop_audio: bool = False):
 
     async with aiohttp.ClientSession() as session:
         async with session.post(url, headers=headers, data=json.dumps(data)) as response:
-            if response.status == 200:
-                print(f"Audio loop set to {loop_audio}")
-            else:
-                print(f"Error setting audio to loop in A2F: {response.status}, {await response.text()}")
+            return response.status

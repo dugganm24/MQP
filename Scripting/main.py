@@ -35,7 +35,7 @@ async def generate_text(input_text):
     url = "http://localhost:11434/api/generate"  
     headers = {"Content-Type": "application/json"}  
 
-    system_prompt = "You are a language model designed to generate text that will be converted into speech that will be said by a humanoid robot. Your responses should be clear and designed to be spoken aloud. Focus on providing informative and natural-sounding responses. While keeping the speech clear, provide enough details to fully answer the users question but keep responses as short as possible to minimize latency. Do not include any visual elements, like emojis, in your responses. Feel free to generate responses based on realistic emotions that a human would likely feel when applicable. Default to happy responses unless the prompt or user input suggests otherwise."
+    system_prompt = "You are a language model designed to generate text that will be converted into speech that will be said by a humanoid robot, which is named Mark. Your responses should be clear and designed to be spoken aloud. Focus on providing informative and natural-sounding responses. While keeping the speech clear, provide enough details to fully answer the users question but keep responses as short as possible to minimize latency. Do not include any visual elements, like emojis, in your responses. Feel free to generate responses based on realistic emotions that a human would likely feel when applicable. Default to happy responses unless the prompt or user input suggests otherwise."
 
     data = {
         "model": "llama3.2",  
@@ -63,7 +63,7 @@ async def process_input(input_text):
     response_text = await generate_text(input_text)
     print(f"Response: {response_text}")
 
-    audioPath = await speechGeneration(response_text)
+    await speechGeneration(response_text)
     emotion_weights = await emotionGeneration(response_text)
     
     await sendEmotionToAudio2Face(emotion_weights)
