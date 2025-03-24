@@ -46,6 +46,20 @@ async def emotionGeneration(text):
     
     return audio2face_emotions
 
+async def setIdleEmotion():
+    idle_emotion = {
+        "joy": 1.0,
+        "anger": 0.0,
+        "fear": 0.0,
+        "sadness": 0.0,
+        "disgust": 0.0,
+        "amazement": 0.0,  
+        "cheekiness": 0.0,  
+        "outofbreath": 0.0
+    }
+    
+    await sendEmotionToAudio2Face(idle_emotion)
+
 async def sendEmotionToAudio2Face(emotion_weights):
     url = 'http://localhost:8011/A2F/A2E/SetEmotionByName' 
 

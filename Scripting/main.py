@@ -9,8 +9,8 @@ import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Audio2Face", "EmotionGeneration")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "Audio2Face", "SpeechGeneration")))
 
-from textToEmotion import emotionGeneration, sendEmotionToAudio2Face
-from textToSpeech import speechGeneration, sendSpeechToAudio2Face, playTrack
+from textToEmotion import emotionGeneration, sendEmotionToAudio2Face, setIdleEmotion
+from textToSpeech import speechGeneration, sendSpeechToAudio2Face, playTrack, setIdleAudio, getResponseLength
 
 def start_ollama():
     ollama_path = r"C:\Users\mpduggan\AppData\Local\Programs\Ollama\ollama.exe"  
@@ -51,42 +51,32 @@ async def generate_text(input_text):
         return f"Request failed: {e}"
 
 async def process_input(input_text):
-    start_time = time.time()
 
-    response_start_time = time.time() 
     response_text = await generate_text(input_text)
-    response_end_time = time.time()
     print(f"Response: {response_text}")
-    print(f"Response generation time: {response_end_time - response_start_time:.2f} seconds")
 
-
-    speech_start_time = time.time()
     audioPath = await speechGeneration(response_text)
-    speech_end_time = time.time()
-    print(f"Speech generation time: {speech_end_time - speech_start_time:.2f} seconds")
-
-    emotion_start_time = time.time()
     emotion_weights = await emotionGeneration(response_text)
-    emotion_end_time = time.time()
-    print(f"Emotion generation time: {emotion_end_time - emotion_start_time:.2f} seconds")
-
-    send_emotion_start_time = time.time()
+    
     await sendEmotionToAudio2Face(emotion_weights)
-    send_emotion_end_time = time.time()
-    print(f"Send emotion time: {send_emotion_end_time - send_emotion_start_time:.2f} seconds")
+    print(f"Sending {audioPath} to Audio2Face for speech playback...")
+    await sendSpeechToAudio2Face()
 
-    send_speech_start_time = time.time()
-    await sendSpeechToAudio2Face(audioPath)
-    send_speech_end_time = time.time()
-    print(f"Send speech time: {send_speech_end_time - send_speech_start_time:.2f} seconds")
-
-    play_start_time = time.time()
     await playTrack()
-    play_end_time = time.time()
-    print(f"Play track time: {play_end_time - play_start_time:.2f} seconds")
 
-    end_time = time.time()
-    print(f"Total time: {end_time - start_time:.2f} seconds")
+    response_length = await getResponseLength()
+    start_of_response = response_length["result"]["default"][0]
+    end_of_response = response_length["result"]["default"][1]
+    track_duration = end_of_response - start_of_response
+    await asyncio.sleep(track_duration)
+
+    await setIdleAudio()
+    await setIdleEmotion()
+
+async def idle_loop():
+    while True:
+        await playTrack()
+        await asyncio.sleep(0.1)
 
 async def main():
 
@@ -94,15 +84,13 @@ async def main():
     if ollama_process is None:
         print("Failed to start Ollama.")
         return
-
+        
     while True:
         input_text = input("Enter text: ")
         if input_text.lower() == "exit":
             break
             
         await process_input(input_text)
-
-    
 
 if __name__ == "__main__":
     asyncio.run(main())
