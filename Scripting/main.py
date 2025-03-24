@@ -24,6 +24,12 @@ def start_ollama():
     except Exception as e:
         print(f"Error starting Ollama: {e}")
         return None
+
+async def idle_a2f():
+    await setIdleAudio()
+    await setIdleEmotion()
+    await setLooping(True)
+    await playTrack()    
     
 async def generate_text(input_text):
     url = "http://localhost:11434/api/generate"  
@@ -50,32 +56,9 @@ async def generate_text(input_text):
     except requests.exceptions.RequestException as e:
         return f"Request failed: {e}"
     
-# async def idle_loop():
-#     global idle_task
-#     await setLooping(True)
-#     print("Idle loop started.")
-#     asyncio.sleep(0.5)
-
-#     while True:
-#         await playTrack()
-#         await asyncio.sleep(0.5)
-
-# async def stop_idle_loop():
-#     global idle_task
-#     if idle_task and not idle_task.done():
-#         idle_task.cancel()
-#         try:
-#             await idle_task
-#         except asyncio.CancelledError:
-#             pass
-#         print("Idle loop stopped.")
-#     await setLooping(False)
-#     await asyncio.sleep(0.5)
-#     print("Looping disabled")
-
 async def process_input(input_text):
     
-    # await stop_idle_loop()
+    await setLooping(False)
 
     response_text = await generate_text(input_text)
     print(f"Response: {response_text}")
@@ -94,10 +77,7 @@ async def process_input(input_text):
     track_duration = end_of_response - start_of_response
     await asyncio.sleep(track_duration)
 
-    await setIdleAudio()
-    await setIdleEmotion()
-    await setLooping(True)
-    await playTrack()
+    await idle_a2f()
 
 async def main():
 
@@ -105,6 +85,8 @@ async def main():
     if ollama_process is None:
         print("Failed to start Ollama.")
         return
+    
+    await idle_a2f()
             
     while True:
         input_text = input("Enter text: ")
