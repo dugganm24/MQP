@@ -1,8 +1,8 @@
 # usd files
 Audio2Face/USD_Files/*
 
-# speech output
-Audio2Face/SpeechGeneration/Output/*
-
 # settings
 .vscode/*
+
+# speech files
+Audio2Face/SpeechGeneration/Output/*
