@@ -9,10 +9,10 @@ __Project Objectives__
 
 __Technologies Used__    
  - **NVIDIA Audio2Face**: For generating realistic human faces and syncing facial expressions and lip movements with input audio file.
- - **Google Text-To-Speech**: For converting text into mp3 audio file.
- - **ffmpeg**: For converting gTTS generated mp3 file into wav format for Audio2Face compatibility.
+ - **llama3.2**: For generating realistic response based on textual input, run locally through Ollama. 
+ - **pyttsx3**: For converting generated text response into wav audio file for Audio2Face integration.
  - **Emotion English DistilRoBERTa-base**: For generating emotion weights based on textual input.
  - **Audio2Face Headless API**: For automatically sending generated audio output and emotion weights to Audio2Face for minimal latency in real time interactions.
- - **Unreal Engine**: For rendering generated emotions and lip-syncing to a MetaHuman for display on LCD. 
+ - **Unreal Engine**: For rendering generated emotions and lip-syncing to a MetaHuman for display on LCD through NVIDIA StreamLivelink plugin. 
  - **NVIDIA GeForce RTX 4090**: NVIDIA GPU to improve processing speeds.
 
