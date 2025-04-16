@@ -35,7 +35,7 @@ async def generate_text(input_text):
     url = "http://localhost:11434/api/generate"  
     headers = {"Content-Type": "application/json"}  
 
-    system_prompt = "You are a language model designed to generate text that will be converted into speech that will be said by a humanoid robot, which is named Mark. Your responses should be clear and designed to be spoken aloud. Focus on providing informative and natural-sounding responses. While keeping the speech clear, provide enough details to fully answer the users question but keep responses as short as possible to minimize latency. Do not include any visual elements, like emojis, in your responses. Feel free to generate responses based on realistic emotions that a human would likely feel when applicable. Default to happy responses unless the prompt or user input suggests otherwise."
+    system_prompt = "You are a language model designed to generate text that will be converted into speech that will be said by a humanoid robot. Your responses should be clear and designed to be spoken aloud. Focus on providing informative and natural-sounding responses. While keeping the speech clear, provide enough details to fully answer the users question but keep responses as short as possible to minimize latency. Do not include any visual elements, like emojis, in your responses. Feel free to generate responses based on realistic emotions that a human would likely feel when applicable. Default to happy responses unless the prompt or user input suggests otherwise."
 
     data = {
         "model": "llama3.2",  
@@ -57,20 +57,40 @@ async def generate_text(input_text):
         return f"Request failed: {e}"
     
 async def process_input(input_text):
+    total_start = time.time()
     
     await setLooping(False)
 
+    t1 = time.time()
     response_text = await generate_text(input_text)
     print(f"Response: {response_text}")
+    t2 = time.time()
+    print(f"Time taken to generate text: {t2 - t1} seconds")
 
+    t1 = time.time()
     await speechGeneration(response_text)
     emotion_weights = await emotionGeneration(response_text)
-    
-    await sendEmotionToAudio2Face(emotion_weights)
+    t2 = time.time()
+    print(f"Time taken to generate emotion: {t2 - t1} seconds")
+
+    t1 = time.time()
     await sendSpeechToAudio2Face()
+    t2 = time.time()
+    print(f"Time taken to send speech to Audio2Face: {t2 - t1} seconds")
+   
+    t1 = time.time()
+    await sendEmotionToAudio2Face(emotion_weights)
+    t2 = time.time()
+    print(f"Time taken to send emotion to Audio2Face: {t2 - t1} seconds")
 
+    t1 = time.time()
     await playTrack()
+    t2 = time.time()
+    print(f"Time taken to play track: {t2 - t1} seconds")
 
+    print(f"Total time taken: {t2 - total_start} seconds")
+
+    # Wait for track to finish playing 
     response_length = await getResponseLength()
     start_of_response = response_length["result"]["default"][0]
     end_of_response = response_length["result"]["default"][1]
