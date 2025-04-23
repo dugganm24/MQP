@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import json 
 import aiohttp
 import time 
+from bs4 import BeautifulSoup
 
 load_dotenv()
 api_key = os.environ.get("SERPAPI_API_KEY")
@@ -41,6 +42,21 @@ def needs_web_search(query):
     keywords = ["today", "now", "current", "latest", "news", "who", "weather", "time", "date", "score", "recent", "when", "did", "is it", "what is", "what was", "how many", "how much", "how long", "how far", "how often", "how many"]
     return any(keyword in query.lower() for keyword in keywords)
 
+async def fetch_full_page(session, url):
+    try:
+        async with session.get(url, timeout=10) as response:
+            if response.status == 200:
+                html = await response.text()
+                soup = BeautifulSoup(html, "html.parser")
+
+                paragraphs = soup.find_all("p")
+                text_content = " ".join(p.get_text() for p in paragraphs[:5])  
+                return text_content.strip()
+            else:
+                return f"(Error {response.status} fetching {url})"
+    except Exception as e:
+        return f"(Error fetching {url}: {e})"
+
 async def search_serpapi(query, session):
     params = {
         "engine": "google",
@@ -50,8 +66,32 @@ async def search_serpapi(query, session):
     async with session.get("https://serpapi.com/search", params=params) as response:
         if response.status == 200:
             results = await response.json()
-            snippets = [res["snippet"] for res in results.get("organic_results", []) if "snippet" in res][:3]
-            return "\n".join(snippets)
+            detailed_contexts = []
+            snippets = []
+            organic_results = results.get("organic_results", [])
+
+            for result in organic_results[:3]:
+                if "snippet" in result:
+                    snippets.append(result["snippet"])
+
+            for result in organic_results[:3]:
+                if "link" in result:
+                    page_text = await fetch_full_page(session, result["link"])
+                    if not page_text.lower().startswith("(error"):
+                        detailed_contexts.append(page_text)
+
+            combined_context = "\n\n".join(detailed_contexts).strip()
+            combined_snippets = "\n".join(snippets).strip()
+
+            final_context = ""
+            if combined_context:
+                final_context += f"Detailed web page content:\n{combined_context}\n\n"
+            if combined_snippets:
+                final_context += f"Top search snippets:\n{combined_snippets}"
+
+            final_context = final_context.strip()
+            return final_context if final_context else "No relevant information found on the web."
+
         else:
             return f"Error: {response.status}, {await response.text()}"
         
@@ -68,7 +108,9 @@ async def generate_text(input_text):
 
     system_prompt = f"""You are a language model designed to generate text that will be converted into speech that will be said by a humanoid robot. Your responses should be clear and designed to be spoken aloud. Focus on providing informative and natural-sounding responses. While keeping the speech clear, provide enough details to fully answer the user's question but keep responses as short as possible to minimize latency. Do not include any visual elements, like emojis, in your responses, or texual elements like (pause) that are not intended to be spoken aloud. Feel free to generate responses based on realistic emotions that a human would likely feel when applicable. Default to happy responses unless the prompt or user input suggests otherwise."
 
-                    If a question requires up-to-date information, you can use the following web search context to help answer the question. If the user asks a question that requires up-to-date information, you should use the web search context to help answer the question. If the user asks a question that does not require up-to-date information, you should not use the web search context to help answer the question. 
+                    IMPORTANT INSTRUCTION: When the user asks for real-time information such as weather, news, stocks, sports scores, dates, or other current data, you MUST use the web search context provided to you. This context contains the most up-to-date information available. Answer directly with the specific data requested (temperature, price, score, etc.) without hedging or expressing uncertainty when the information is clearly available in the context.
+                    
+                    Always prioritize clear and direct answers that reflect accurate, real-time details when web context is available. If no web context is provided, answer using general knowledge. Unless the prompt suggests a specific emotional tone, default to a friendly, positive tone. 
 
                     {search_section}
                     """
@@ -96,7 +138,6 @@ async def process_input(input_text):
     
     await setLooping(False)
 
-    start_time = time.time()
 
     response_text = await generate_text(input_text)
     print(f"Response: {response_text}")
@@ -108,10 +149,6 @@ async def process_input(input_text):
     await sendSpeechToAudio2Face()
 
     await playTrack()
-
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print(f"Time taken: {elapsed_time:.2f} seconds")
 
     response_length = await getResponseLength()
     start_of_response = response_length["result"]["default"][0]
