@@ -16,3 +16,14 @@ This project focuses on generating realistic human facial video and mapping it o
  - **Unreal Engine**: For rendering generated emotions and lip-syncing to a MetaHuman for display on LCD through NVIDIA StreamLivelink plugin. 
  - **NVIDIA GeForce RTX 4090**: NVIDIA GPU to improve processing speeds.
 
+ ### Steps to Run
+ 1. Open NVIDIA Omniverse, launch Audio2Face and open the Metahuman_Streaming USD file
+ 2. Activate the StreamLivelink plugin in Audio2Face
+ 3. Open Epic Games Launcher and launch Unreal Engine 5.3
+ 4. Open the Metahuman_Streaming Unreal Engine project (C: > This PC > Epic Games > UE_5.3 > Unreal Projects > MyProject2 5.3)
+ 5. Navigate to virtual production under settings and activate the StreamLivelink plugin preset
+ 6. Launch the PIE simulator in Unreal Engine to project the face in a separate window which can be displayed on the OLED display 
+ 7. Navigate to Scripting directory of this project and run the main file 
+ 8. Enter input text and interact with the system 
+
+

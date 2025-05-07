@@ -19,6 +19,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "A
 from textToEmotion import emotionGeneration, sendEmotionToAudio2Face, setIdleEmotion
 from textToSpeech import speechGeneration, sendSpeechToAudio2Face, playTrack, setIdleAudio, getResponseLength, setLooping
 
+# Boot ollama and run llama3.2 for response generation
 def start_ollama():
     ollama_path = r"C:\Users\mpduggan\AppData\Local\Programs\Ollama\ollama.exe"  
 
@@ -32,16 +33,19 @@ def start_ollama():
         print(f"Error starting Ollama: {e}")
         return None
 
+# Helper function to set Audio2Face to idle state
 async def idle_a2f():
     await setIdleAudio()
     await setIdleEmotion()
     await setLooping(True)
     await playTrack()    
-    
+
+# Helper function to check if a web search is needed based on the query 
 def needs_web_search(query):
     keywords = ["today", "now", "current", "latest", "news", "who", "weather", "time", "date", "score", "recent", "when", "did", "is it", "what is", "what was", "how many", "how much", "how long", "how far", "how often", "how many"]
     return any(keyword in query.lower() for keyword in keywords)
 
+# Function to fetch the full page content from a URL
 async def fetch_full_page(session, url):
     try:
         async with session.get(url, timeout=10) as response:
@@ -57,6 +61,7 @@ async def fetch_full_page(session, url):
     except Exception as e:
         return f"(Error fetching {url}: {e})"
 
+# Function to perform a web search using SerpAPI
 async def search_serpapi(query, session):
     params = {
         "engine": "google",
@@ -94,18 +99,22 @@ async def search_serpapi(query, session):
 
         else:
             return f"Error: {response.status}, {await response.text()}"
-        
+ 
+# Function to generate text using the Ollama API       
 async def generate_text(input_text):
     url = "http://localhost:11434/api/generate"  
     headers = {"Content-Type": "application/json"}  
 
+    # Determine if a web search is needed and perform it if necessary
     search_context = ""
     if needs_web_search(input_text):
         async with aiohttp.ClientSession() as session:
             search_context = await search_serpapi(input_text, session)
 
+    # Pass the search context to the system prompt
     search_section = f"Here is relevant web search context:\n{search_context}" if search_context else ""
 
+    # System prompt for LLM for contextual understanding
     system_prompt = f"""You are a language model designed to generate text that will be converted into speech that will be said by a humanoid robot. Your responses should be clear and designed to be spoken aloud. Focus on providing informative and natural-sounding responses. While keeping the speech clear, provide enough details to fully answer the user's question but keep responses as short as possible to minimize latency. Do not include any visual elements, like emojis, in your responses, or texual elements like (pause) that are not intended to be spoken aloud. Feel free to generate responses based on realistic emotions that a human would likely feel when applicable. Default to happy responses unless the prompt or user input suggests otherwise."
 
                     IMPORTANT INSTRUCTION: When the user asks for real-time information such as weather, news, stocks, sports scores, dates, or other current data, you MUST use the web search context provided to you. This context contains the most up-to-date information available. Answer directly with the specific data requested (temperature, price, score, etc.) without hedging or expressing uncertainty when the information is clearly available in the context.
@@ -115,6 +124,7 @@ async def generate_text(input_text):
                     {search_section}
                     """
     
+    # Prepare the data for the API request
     data = {
         "model": "llama3.2",  
         "prompt": f"{system_prompt}\nUser input: {input_text}\nRobot speech:",
@@ -123,6 +133,7 @@ async def generate_text(input_text):
         "stream": False
     }
 
+    # Send the request to the Ollama API
     try:
         response = requests.post(url, headers=headers, json=data)
         
@@ -133,7 +144,8 @@ async def generate_text(input_text):
             return f"Error: {response.status_code}, {response.text}"
     except requests.exceptions.RequestException as e:
         return f"Request failed: {e}"
-    
+ 
+# Function to process user input and generate response   
 async def process_input(input_text):
     
     await setLooping(False)
@@ -158,15 +170,19 @@ async def process_input(input_text):
 
     await idle_a2f()
 
+# Main function 
 async def main():
 
+    # Boot Ollama and run the LLM
     ollama_process = start_ollama()
     if ollama_process is None:
         print("Failed to start Ollama.")
         return
     
+    # Set Audio2Face to idle state
     await idle_a2f()
-            
+          
+    # Main loop to process user input  
     while True:
         input_text = input("Enter text: ")
         if input_text.lower() == "exit":

@@ -6,6 +6,7 @@ import json
 import aiohttp
 import asyncio
 
+# Function to generate speech from text using pyttsx3
 async def speechGeneration(text):
     output_folder = "C:/Users/mpduggan/MQP/Audio2Face/SpeechGeneration/Output"
 
@@ -26,6 +27,7 @@ async def speechGeneration(text):
     await loop.run_in_executor(None, generate_speech)
     return file_path_wav
 
+# Function to send the generated speech to Audio2Face
 async def sendSpeechToAudio2Face():
 
     audioPath = "speechOutput.wav"
@@ -45,7 +47,8 @@ async def sendSpeechToAudio2Face():
     async with aiohttp.ClientSession() as session:
         async with session.post(url, headers=headers, data=json.dumps(data)) as response:
             return response.status
-        
+
+# Function to set the audio track to silent when waiting for new response      
 async def setIdleAudio():
 
     silentPath = "C:/Users/mpduggan/MQP/Audio2Face/SpeechGeneration/Output/silent.wav"
@@ -66,6 +69,7 @@ async def setIdleAudio():
         async with session.post(url, headers=headers, data=json.dumps(data)) as response:
            return response.status
 
+# Function to get the length of the audio track
 async def getResponseLength():
     url = 'http://localhost:8011/A2F/Player/GetRange'
 
@@ -86,7 +90,7 @@ async def getResponseLength():
             else:
                 return None
 
-
+# Function to play the audio track
 async def playTrack():
     url = 'http://localhost:8011/A2F/Player/Play'
 
@@ -103,6 +107,7 @@ async def playTrack():
         async with session.post(url, headers=headers, data=json.dumps(data)) as response:
            return response.status
 
+# Function to stop the audio track
 async def setLooping(loop_audio: bool = False):
     url = 'http://localhost:8011/A2F/Player/SetLooping'
 
